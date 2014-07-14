@@ -46,12 +46,32 @@ etcd:
     - group: etcd
     - dir_mode: 700
 
+{% if grains['os_family'] == 'RedHat' %}
+
+/etc/default/etcd:
+  file.managed:
+    - source: salt://etcd/default
+    - template: jinja
+    - user: root
+    - group: root
+    - mode: 644
+
+/usr/lib/systemd/system/etcd.service:
+  file.managed:
+    - source: salt://etcd/etcd.service
+    - user: root
+    - group: root
+
+{% else %}
+
 /etc/init.d/etcd:
   file.managed:
     - source: salt://etcd/initd
     - user: root
     - group: root
     - mode: 755
+
+{% endif %}
 
 etcd-service:
   service.running:

@@ -14,22 +14,20 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# TODO(jbeda): Provide a way to override project
-ZONE=us-central1-b
-MASTER_SIZE=g1-small
-MINION_SIZE=g1-small
-NUM_MINIONS=4
-# gcloud/gcutil will expand this to the latest supported image.
-IMAGE=backports-debian-7-wheezy
-NETWORK=default
+# Passed as arguments to provisioning from Vagrantfile
+MASTER_IP=$1
+NUM_MINIONS=$2
+MINION_IP=$3
+
 INSTANCE_PREFIX=kubernetes
 MASTER_NAME="${INSTANCE_PREFIX}-master"
 MASTER_TAG="${INSTANCE_PREFIX}-master"
 MINION_TAG="${INSTANCE_PREFIX}-minion"
 MINION_NAMES=($(eval echo ${INSTANCE_PREFIX}-minion-{1..${NUM_MINIONS}}))
-MINION_IP_RANGES=($(eval echo "10.244.{1..${NUM_MINIONS}}.0/24"))
+MINION_IP_RANGES=($(eval echo "10.244.{1..${NUM_MINIONS}}.1/24"))
 MINION_SCOPES=""
 
-## For the Vagrant Environment, use the following settings
-#export KUBERNETES_MASTER="http://10.245.1.2:8080"
-#export KUBE_MASTER_IP="10.245.1.2:8000"
+# simplified setup for local vagrant 2 node cluster
+MASTER_HTPASSWD=passw0rd
+
+

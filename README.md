@@ -15,7 +15,8 @@ While the concepts and architecture in Kubernetes represent years of experience 
 
 ### Contents
 * [Getting started on Google Compute Engine](#getting-started-on-google-compute-engine)
-* [Running a local cluster](#running-locally)
+* [Running a local cluster in Vagrant managed VMs](#running-locally-vagrant)
+* [Running a local cluster on your host](#running-locally)
 * [Running on CoreOS](#running-on-coreos)
 * [Discussion and Community Support](#community-discussion-and-support)
 * [Hacking on Kubernetes](#development)
@@ -109,6 +110,52 @@ Look in `api/examples/` for more examples
 ```
 cd kubernetes
 cluster/kube-down.sh
+```
+
+## Running a Vagrant managed VM (Fedora)
+In a terminal window, run:
+
+```
+cd kubernetes
+vagrant up
+```
+
+This will build and start a lightweight local cluster, consisting of a master VM and N minion VMs.
+
+Each VM is running Fedora with the Kubernetes services installed into systemd.
+
+By default, the Vagrantfile is configured to create 1 minion, but if you want to work with replicas, we recommend increasing this
+value to a larger value.
+
+To update this cluster with latest source, you can just rerun the following command to invoke the Salt update of each machine in cluster:
+
+```
+vagrant provision
+```
+
+To access the master or any minion:
+
+```
+vagrant ssh master
+vagrant ssh minion-1
+vagrant ssh minion-2
+```
+
+To interact with the master, you can reach it at http://10.245.1.2:8080
+
+To facilitate usage of the cluster/kubecfg.sh script from you host, modify cluster/config-default.sh and add the following:
+
+```
+export KUBERNETES_MASTER="http://10.245.1.2:8080"
+export KUBE_MASTER_IP="10.245.1.2:8000"
+```
+
+You can now use cluster/kubecfg.sh to interact with your VM machines.
+
+To destroy the cluster:
+
+```
+vagrant destroy -f
 ```
 
 ## Running locally
