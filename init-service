@@ -1,0 +1,10 @@
+#!/bin/bash
+echo Initializing Service
+cluster/kubecfg.sh -c examples/guestbook/redis-master.json create /pods
+cluster/kubecfg.sh -c examples/guestbook/redis-master-service.json create /services
+cluster/kubecfg.sh -c examples/guestbook/redis-slave-controller.json create /replicationControllers
+cluster/kubecfg.sh -c examples/guestbook/redis-slave-service.json create /services
+cluster/kubecfg.sh -c examples/guestbook/rails-frontend-controller.json create /replicationControllers
+#cluster/kubecfg.sh -c examples/guestbook/frontend-service.json create /services
+
+

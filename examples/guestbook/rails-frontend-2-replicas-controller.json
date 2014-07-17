@@ -1,0 +1,18 @@
+  {
+    "id": "frontendController",
+    "desiredState": {
+      "replicas": 2,
+      "replicaSelector": {"name": "frontend"},
+      "podTemplate": {
+        "desiredState": {
+           "manifest": {
+             "containers": [{
+               "image": "rafael/docker-rails-toy",
+               "ports": [{"containerPort": 3000, "hostPort": 8080}]
+             }]
+           }
+         },
+         "labels": {"name": "frontend"}
+        }},
+    "labels": {"name": "frontend"}
+  }

@@ -1,0 +1,18 @@
+{
+  "id": "rails-webapp",
+  "desiredState": {
+    "manifest": {
+      "containers": [{
+        "image": "rafael/web-rails",
+        "ports": [{
+          "containerPort": 3000,
+          "hostPort": 80
+        }]
+      }]
+    }
+  },
+  "labels": {
+    "name": "web-rails"
+  }
+}
+    

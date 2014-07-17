@@ -1,0 +1,8 @@
+{
+  "id": "frontendservice",
+  "createExternalLoadBalancer": true,
+  "port": 8080,
+  "selector": {
+    "name": "frontend"
+  }
+}
