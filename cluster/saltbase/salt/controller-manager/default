@@ -1,4 +1,7 @@
 {% set master="-master=127.0.0.1:8080" %}
+{% if grains.master_ip is defined %}
+  {% set master="-master=" + grains.master_ip + ":8080" %}  
+{% endif %}
 {% if grains.etcd_servers is defined %}
   {% set etcd_servers = "-etcd_servers=http://" + grains.etcd_servers + ":4001" %}
 {% else %}

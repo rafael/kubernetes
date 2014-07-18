@@ -4,14 +4,7 @@
 {% set environment_file = '/etc/default/docker' %}
 {% endif %}
 
-
-{% if grains['os_family'] == 'RedHat' %}
-
-docker-io:
-  pkg:
-    - installed
-
-{% else %}
+{% if grains['os_family'] != 'RedHat' %}
 
 docker-repo:
   pkgrepo.managed:
@@ -42,6 +35,20 @@ cbr0:
 
 {% endif %}
 
+{% if grains['os_family'] == 'RedHat' %}
+
+docker-io:
+  pkg:
+    - installed
+
+docker:
+  service.running:
+    - enable: True
+    - require: 
+      - pkg: docker-io
+
+{% else %}
+
 {{ environment_file }}:
   file.managed:
     - source: salt://docker/docker-defaults
@@ -50,8 +57,6 @@ cbr0:
     - group: root
     - mode: 644
     - makedirs: true
-
-{% if grains['os_family'] != 'RedHat' %}
 
 lxc-docker:
   pkg.latest
@@ -70,4 +75,5 @@ lxc-docker:
 #       - pkg: lxc-docker
 #     - watch:
 #       - file: /etc/default/docker
+
 {% endif %}

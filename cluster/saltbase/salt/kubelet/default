@@ -5,8 +5,8 @@
   {% set etcd_servers = "-etcd_servers=http://" + ips[0][0] + ":4001" %}
 {% endif %}
 
-{% if grains.etcd_servers is defined %}
-  {% set address = "-address=" + grains.etcd_servers %}
+{% if grains.minion_ip is defined %}
+  {% set address = "-address=" + grains.minion_ip + " -hostname_override=" + grains.minion_ip %}
 {% else %}
   {% set address = "-address=$HOSTNAME" %}
 {% endif %}

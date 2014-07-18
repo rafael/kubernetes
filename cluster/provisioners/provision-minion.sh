@@ -18,6 +18,7 @@
 set -e
 source /vagrant/cluster/provisioners/provision-config.sh
 
+MINION_IP=$4
 # we will run provision to update code each time we test, so we do not want to do salt install each time
 if [ ! -f "/var/kube-vagrant-setup" ]; then
 
@@ -33,6 +34,7 @@ if [ ! -f "/var/kube-vagrant-setup" ]; then
   # Our minions will have a pool role to distinguish them from the master.
   cat <<EOF >/etc/salt/minion.d/grains.conf
 grains:
+  minion_ip: $MINION_IP
   etcd_servers: $MASTER_IP
   roles:
     - kubernetes-pool

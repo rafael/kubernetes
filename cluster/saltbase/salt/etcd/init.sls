@@ -79,5 +79,9 @@ etcd-service:
     - enable: True
     - watch:
       - file: /etc/etcd/etcd.conf
+      {% if grains['os_family'] == 'RedHat' %}
+      - file: /usr/lib/systemd/system/etcd.service
+      - file: /etc/default/etcd
+      {% endif %}
       - cmd: etcd-install
 

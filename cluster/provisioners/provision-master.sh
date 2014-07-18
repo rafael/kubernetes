@@ -25,8 +25,9 @@ if [ ! -f "/var/kube-vagrant-setup" ]; then
 
   cat <<EOF >/etc/salt/minion.d/grains.conf
 grains:
+  master_ip: $MASTER_IP
   etcd_servers: $MASTER_IP
-  minion_ips: $MINION_IP
+  minion_ips: $MINION_IPS
   roles:
     - kubernetes-master
 EOF

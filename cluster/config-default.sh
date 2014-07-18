@@ -27,9 +27,9 @@ MASTER_NAME="${INSTANCE_PREFIX}-master"
 MASTER_TAG="${INSTANCE_PREFIX}-master"
 MINION_TAG="${INSTANCE_PREFIX}-minion"
 MINION_NAMES=($(eval echo ${INSTANCE_PREFIX}-minion-{1..${NUM_MINIONS}}))
-MINION_IP_RANGES=($(eval echo "10.244.{1..${NUM_MINIONS}}.0/24"))
+MINION_IP_RANGES=($(eval echo "10.245.{2..${NUM_MINIONS}}.2/24"))
 MINION_SCOPES=""
 
 ## For the Vagrant Environment, use the following settings
 #export KUBERNETES_MASTER="http://10.245.1.2:8080"
-#export KUBE_MASTER_IP="10.245.1.2:8000"
+#export KUBE_MASTER_IP="10.245.1.2:8080"
