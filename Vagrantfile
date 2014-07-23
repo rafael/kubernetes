@@ -11,6 +11,9 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   # The number of minions to provision
   num_minion = ENV['KUBERNETES_NUM_MINIONS'] || 3
+  if num_minion.is_a? String
+    num_minion = num_minion.to_i
+  end
 
   # ip configuration
   master_ip = "10.245.1.2"
