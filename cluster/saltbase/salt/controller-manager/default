@@ -1,3 +1,7 @@
+{% set daemon_args = "$DAEMON_ARGS" %}
+{% if grains['os_family'] == 'RedHat' %}
+	{% set daemon_args = "" %}
+{% endif %}
 {% set master="-master=127.0.0.1:8080" %}
 {% if grains.master_ip is defined %}
   {% set master="-master=" + grains.master_ip + ":8080" %}  
@@ -8,4 +12,4 @@
   {% set ips = salt['mine.get']('roles:kubernetes-master', 'network.ip_addrs', 'grain').values() %}
   {% set etcd_servers = "-etcd_servers=http://" + ips[0][0] + ":4001" %}
 {% endif %}
-DAEMON_ARGS="{{master}} {{etcd_servers}}"
+DAEMON_ARGS="{{daemon_args}} {{master}} {{etcd_servers}}"

@@ -16,63 +16,42 @@
 
 # exit on any error
 set -e
-source /vagrant/cluster/provisioners/provision-config.sh
+source $(dirname $0)/provision-config.sh
 
+MINION_IP=$4
 # we will run provision to update code each time we test, so we do not want to do salt install each time
 if [ ! -f "/var/kube-vagrant-setup" ]; then
+
+  if [ ! "$(cat /etc/hosts | grep $MASTER_NAME)" ]; then
+    echo "Adding host entry for $MASTER_NAME"
+    echo "$MASTER_IP $MASTER_NAME" >> /etc/hosts
+  fi
+
+  # Prepopulate the name of the Master
   mkdir -p /etc/salt/minion.d
   echo "master: $MASTER_NAME" > /etc/salt/minion.d/master.conf
 
+  # Our minions will have a pool role to distinguish them from the master.
   cat <<EOF >/etc/salt/minion.d/grains.conf
 grains:
-  master_ip: $MASTER_IP
+  minion_ip: $MINION_IP
   etcd_servers: $MASTER_IP
-  minion_ips: $MINION_IPS
   roles:
-    - kubernetes-master
-EOF
-
-  # Configure the salt-master
-  # Auto accept all keys from minions that try to join
-  mkdir -p /etc/salt/master.d
-  cat <<EOF >/etc/salt/master.d/auto-accept.conf
-open_mode: True
-auto_accept: True
-EOF
-
-  cat <<EOF >/etc/salt/master.d/reactor.conf
-# React to new minions starting by running highstate on them.
-reactor:
-  - 'salt/minion/*/start':
-    - /srv/reactor/start.sls
+    - kubernetes-pool
+  cbr-cidr: $MINION_IP_RANGE
 EOF
 
   # Install Salt
   #
   # We specify -X to avoid a race condition that can cause minion failure to
   # install.  See https://github.com/saltstack/salt-bootstrap/issues/270
-  #
-  # -M installs the master
-  curl -L http://bootstrap.saltstack.com | sh -s -- -M
+  curl -L http://bootstrap.saltstack.com | sh -s -- -X
 
-  mkdir -p /srv/salt/nginx
-  echo $MASTER_HTPASSWD > /srv/salt/nginx/htpasswd
+  ## TODO this only works on systemd distros, need to find a work-around as removing -X above fails to start the services installed
+  systemctl enable salt-minion
+  systemctl start salt-minion
 
   # a file we touch to state that base-setup is done
   echo "Salt configured" > /var/kube-vagrant-setup
+
 fi
-
-# Build release
-echo "Building release"
-pushd /vagrant
-  ./release/build-release.sh kubernetes
-popd
-
-echo "Running release install script"
-pushd /vagrant/output/release/master-release/src/scripts
-  ./master-release-install.sh
-popd
-
-echo "Executing configuration"
-salt '*' mine.update
-salt --force-color '*' state.highstate

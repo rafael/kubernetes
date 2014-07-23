@@ -1,3 +1,7 @@
+{% set daemon_args = "$DAEMON_ARGS" %}
+{% if grains['os_family'] == 'RedHat' %}
+	{% set daemon_args = "" %}
+{% endif %}
 {% if grains.etcd_servers is defined %}
   {% set etcd_servers = "-etcd_servers=http://" + grains.etcd_servers + ":4001" %}
 {% else %}
@@ -11,4 +15,4 @@
   {% set address = "-address=$HOSTNAME" %}
 {% endif %}
 
-DAEMON_ARGS="{{etcd_servers}} {{address}} -config=/etc/kubernetes/manifests"
+DAEMON_ARGS="{{daemon_args}} {{etcd_servers}} {{address}} -config=/etc/kubernetes/manifests"

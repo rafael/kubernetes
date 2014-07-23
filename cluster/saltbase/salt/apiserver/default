@@ -1,3 +1,8 @@
+{% set daemon_args = "$DAEMON_ARGS" %}
+{% if grains['os_family'] == 'RedHat' %}
+	{% set daemon_args = "" %}
+{% endif %}
+
 {% set minion_regexp = "-minion_regexp '" + pillar['instance_prefix'] + ".*'" %}
 {% set address = "-address 127.0.0.1" %}
 
@@ -14,4 +19,6 @@
   {% set machines = "-machines " + ','.join(salt['mine.get']('roles:kubernetes-pool', 'network.ip_addrs', expr_form='grain').keys()) %}    
 {% endif %}
 
-DAEMON_ARGS="{{address}} {{machines}} {{etcd_servers}} {{ minion_regexp }}"
+DAEMON_ARGS="{{daemon_args}} {{address}} {{machines}} {{etcd_servers}} {{ minion_regexp }}"
+
+
