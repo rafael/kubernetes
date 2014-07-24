@@ -1,0 +1,6 @@
+fedora:
+  name: fedora20
+  box_url: http://opscode-vm-bento.s3.amazonaws.com/vagrant/virtualbox/opscode_fedora-20_chef-provisionerless.box
+ubuntu:
+  name: ubuntu14
+  box_url: https://oss-binaries.phusionpassenger.com/vagrant/boxes/latest/ubuntu-14.04-amd64-vbox.box
