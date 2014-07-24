@@ -53,7 +53,7 @@ EOF
   # install.  See https://github.com/saltstack/salt-bootstrap/issues/270
   #
   # -M installs the master
-  curl -L http://bootstrap.saltstack.com | sh -s -- -M
+  curl -L http://bootstrap.saltstack.com -s -S| sh -s -- -M
 
   mkdir -p /srv/salt/nginx
   echo $MASTER_HTPASSWD > /srv/salt/nginx/htpasswd
