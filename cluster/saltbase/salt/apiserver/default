@@ -1,5 +1,24 @@
-{%- set ips = salt['mine.get']('roles:kubernetes-master', 'network.ip_addrs', 'grain').values() %}
-DAEMON_ARGS="$DAEMON_ARGS -etcd_servers=http://{{ ips[0][0] }}:4001 -minion_regexp '{{ pillar['instance_prefix'] }}.*'"
+{% set daemon_args = "$DAEMON_ARGS" %}
+{% if grains['os_family'] == 'RedHat' %}
+	{% set daemon_args = "" %}
+{% endif %}
 
-MACHINES="{{ ','.join(salt['mine.get']('roles:kubernetes-pool', 'network.ip_addrs', expr_form='grain').keys()) }}"
-DAEMON_ARGS="$DAEMON_ARGS --machines $MACHINES"
+{% set minion_regexp = "-minion_regexp '" + pillar['instance_prefix'] + ".*'" %}
+{% set address = "-address 127.0.0.1" %}
+
+{% if grains.etcd_servers is defined %}
+  {% set etcd_servers = "-etcd_servers=http://" + grains.etcd_servers + ":4001" %}
+  {% set address = "-address=" + grains.etcd_servers %}  
+{% else %}
+  {% set ips = salt['mine.get']('roles:kubernetes-master', 'network.ip_addrs', 'grain').values() %}
+  {% set etcd_servers = "-etcd_servers=http://" + ips[0][0] + ":4001" %}
+{% endif %}
+{% if grains.minion_ips is defined %}
+  {% set machines = "-machines " + grains.minion_ips %}
+{% else %}
+  {% set machines = "-machines " + ','.join(salt['mine.get']('roles:kubernetes-pool', 'network.ip_addrs', expr_form='grain').keys()) %}    
+{% endif %}
+
+DAEMON_ARGS="{{daemon_args}} {{address}} {{machines}} {{etcd_servers}} {{ minion_regexp }}"
+
+
